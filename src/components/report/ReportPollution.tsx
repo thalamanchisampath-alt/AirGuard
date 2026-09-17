@@ -236,10 +236,10 @@ export const ReportPollution: React.FC = () => {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setLocationName(`${currentLocation.name}, Sector 4`)}
+                  onClick={() => setLocationName(`${currentLocation.name}, ${currentLocation.city || 'Delhi'}`)}
                   className="text-[10px] text-emerald-600 dark:text-emerald-400 hover:underline mt-1 inline-block"
                 >
-                  Use current station: {currentLocation.name}
+                  Use active area: {currentLocation.name} ({currentLocation.city || 'Delhi'})
                 </button>
               </div>
 

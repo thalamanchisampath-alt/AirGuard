@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { CityLocation, PollutionReport, CommunityAction, AppNotification, PollutionSource } from '../types';
-import { CITY_LOCATIONS, INITIAL_REPORTS, INITIAL_COMMUNITY_ACTIONS, INITIAL_NOTIFICATIONS, POLLUTION_SOURCES } from '../data/mockData';
+import { CITY_LOCATIONS, INITIAL_REPORTS, INITIAL_COMMUNITY_ACTIONS, INITIAL_NOTIFICATIONS, POLLUTION_SOURCES, resolveIndianLocation } from '../data/mockData';
 
 interface ToastInfo {
   id: string;
@@ -25,8 +25,11 @@ export interface UserProfile {
 }
 
 interface AppContextType {
+  locations: CityLocation[];
+  setLocations: React.Dispatch<React.SetStateAction<CityLocation[]>>;
   currentLocation: CityLocation;
   setCurrentLocation: (loc: CityLocation) => void;
+  searchAndSelectIndianLocation: (query: string) => CityLocation | null;
   isDarkMode: boolean;
   toggleDarkMode: () => void;
   activeTab: string;
@@ -89,7 +92,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [activeTab, setActiveTab] = useState<string>('dashboard');
 
   // Location state
+  const [locations, setLocations] = useState<CityLocation[]>(CITY_LOCATIONS);
   const [currentLocation, setCurrentLocation] = useState<CityLocation>(CITY_LOCATIONS[0]);
+
+  const searchAndSelectIndianLocation = (query: string): CityLocation | null => {
+    if (!query || !query.trim()) return null;
+    const resolved = resolveIndianLocation(query, locations);
+    if (resolved) {
+      // Check if already in locations list
+      setLocations((prev) => {
+        if (prev.some((loc) => loc.id === resolved.id)) return prev;
+        return [resolved, ...prev];
+      });
+      setCurrentLocation(resolved);
+      showToast(`Switched telemetry to ${resolved.name} (${resolved.city}, ${resolved.state})`, 'success');
+      return resolved;
+    }
+    return null;
+  };
 
   // Reports state with localStorage persistence
   const [reports, setReports] = useState<PollutionReport[]>(() => {
@@ -268,8 +288,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   return (
     <AppContext.Provider
       value={{
+        locations,
+        setLocations,
         currentLocation,
         setCurrentLocation,
+        searchAndSelectIndianLocation,
         isDarkMode,
         toggleDarkMode,
         activeTab,

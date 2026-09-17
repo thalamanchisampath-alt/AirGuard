@@ -98,11 +98,18 @@ export const DashboardPage: React.FC = () => {
         <div className="lg:col-span-8 flex flex-col justify-between space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                Atmospheric Pollutant Spectrum
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  Atmospheric Pollutant Spectrum
+                </h3>
+                {currentLocation.cpcbStationCode && (
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-700">
+                    CPCB: {currentLocation.cpcbStationCode}
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Live readings for {currentLocation.name} • Updated {currentLocation.lastUpdated}
+                {currentLocation.name}, {currentLocation.city}, {currentLocation.state} ({currentLocation.region || 'India'}) • Updated {currentLocation.lastUpdated}
               </p>
             </div>
             <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500">

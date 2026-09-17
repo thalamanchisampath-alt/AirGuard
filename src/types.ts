@@ -17,6 +17,10 @@ export interface CityLocation {
   id: string;
   name: string;
   district: string;
+  city?: string;
+  state?: string;
+  region?: 'North' | 'South' | 'West' | 'East' | 'Central' | 'North-East' | string;
+  cpcbStationCode?: string;
   aqi: number;
   category: AQICategory;
   pm25: number;
@@ -25,7 +29,7 @@ export interface CityLocation {
   no2: number;
   o3: number;
   so2: number;
-  mainSource: 'Traffic Emissions' | 'Industrial Zone' | 'Construction Dust' | 'Mixed Urban' | 'Port Marine';
+  mainSource: 'Traffic Emissions' | 'Industrial Zone' | 'Construction Dust' | 'Mixed Urban' | 'Port Marine' | 'Agricultural Stubble' | 'Thermal Power' | string;
   lastUpdated: string;
   coordinates: { x: number; y: number; lat: number; lng: number };
   temp: number;
@@ -74,6 +78,20 @@ export interface HealthAssessmentResult {
 
 export type TravelMode = 'walking' | 'cycling' | 'two-wheeler' | 'car' | 'public-transport';
 
+export interface NavigationStep {
+  id: string;
+  instruction: string;
+  distanceMeters: number;
+  durationSeconds: number;
+  turnType: 'depart' | 'straight' | 'turn-left' | 'turn-right' | 'slight-left' | 'slight-right' | 'roundabout' | 'destination' | 'greenway-entry';
+  roadName: string;
+  segmentAqi: number;
+  segmentCategory: AQICategory;
+  airQualityAlert?: string;
+  isGreenCorridor?: boolean;
+  landmarksNearby?: string;
+}
+
 export interface CleanAirRoute {
   id: string;
   type: 'fastest' | 'cleanest' | 'balanced';
@@ -87,6 +105,41 @@ export interface CleanAirRoute {
   keyFeature: string;
   routeHighlights: string[];
   co2Grams: number;
+  steps?: NavigationStep[];
+  waypoints?: string[];
+  elevationGainM?: number;
+  treeCanopyCoverage?: number;
+  lungDamageIndex?: 'Minimal' | 'Low' | 'Moderate' | 'High';
+  pm25AvoidedPercent?: number;
+}
+
+export interface IndiaLocationPoint {
+  id: string;
+  name: string;
+  type: 'transit_hub' | 'tech_park' | 'commercial' | 'heritage' | 'residential' | 'botanical_park' | 'riverfront_lake' | 'hospital';
+  description?: string;
+  baselineAqi?: number;
+  isEcoZone?: boolean;
+}
+
+export interface IndiaCityInfo {
+  name: string;
+  district?: string;
+  state: string;
+  region: 'North India' | 'West India' | 'South India' | 'East India' | 'Central India' | 'North-East';
+  lat: number;
+  lng: number;
+  tier: 1 | 2 | 3;
+  baselineAqi: number;
+  points: IndiaLocationPoint[];
+}
+
+export interface IndiaStateInfo {
+  state: string;
+  capital: string;
+  type: 'State' | 'Union Territory';
+  region: 'North India' | 'West India' | 'South India' | 'East India' | 'Central India' | 'North-East';
+  cities: IndiaCityInfo[];
 }
 
 export interface PollutionReport {
