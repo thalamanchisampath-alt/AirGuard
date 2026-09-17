@@ -204,7 +204,7 @@ export const HourlyChart: React.FC = () => {
           ))}
 
           {/* Active Hover vertical line */}
-          {hoveredIndex !== null && (
+          {hoveredIndex !== null && points[hoveredIndex] && (
             <line
               x1={points[hoveredIndex].x}
               y1={paddingY}
@@ -218,7 +218,7 @@ export const HourlyChart: React.FC = () => {
         </svg>
 
         {/* Floating Tooltip */}
-        {hoveredData && hoveredIndex !== null && (
+        {hoveredData && hoveredIndex !== null && points[hoveredIndex] && (
           <div
             className="absolute top-2 pointer-events-none transform -translate-x-1/2 p-2.5 rounded-xl bg-slate-900/95 text-white shadow-xl border border-slate-700 text-xs backdrop-blur-md z-20 animate-in fade-in zoom-in-95 duration-100"
             style={{

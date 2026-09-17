@@ -14,6 +14,16 @@ interface ExposureInputs {
   useMask: boolean;
 }
 
+export interface UserProfile {
+  name: string;
+  role: string;
+  id: string;
+  points: number;
+  co2SavedKg: number;
+  completedActionsCount: number;
+  rank: string;
+}
+
 interface AppContextType {
   currentLocation: CityLocation;
   setCurrentLocation: (loc: CityLocation) => void;
@@ -32,7 +42,9 @@ interface AppContextType {
   }) => string;
   communityActions: CommunityAction[];
   toggleCommunityAction: (id: string) => void;
+  joinCommunityAction: (id: string) => void;
   userPoints: number;
+  userProfile: UserProfile;
   co2SavedTotalKg: number;
   completedActionsCount: number;
   notifications: AppNotification[];
@@ -48,6 +60,7 @@ interface AppContextType {
   setSelectedSourceForModal: (source: PollutionSource | null) => void;
   isProfileModalOpen: boolean;
   setIsProfileModalOpen: (open: boolean) => void;
+  openProfileModal: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -196,10 +209,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Computed metrics from community actions
   const completedActions = communityActions.filter((a) => a.completed);
   const completedActionsCount = completedActions.length;
-  const userPoints = completedActions.reduce((acc, curr) => acc + curr.points, 85); // Baseline 85 welcome points
+  const userPoints = completedActions.reduce((acc, curr) => acc + (curr?.points ?? 0), 85); // Baseline 85 welcome points
   const co2SavedTotalKg = parseFloat(
-    completedActions.reduce((acc, curr) => acc + curr.co2SavedKg, 12.4).toFixed(1)
+    completedActions.reduce((acc, curr) => acc + (curr?.co2SavedKg ?? 0), 12.4).toFixed(1)
   );
+
+  const userProfile: UserProfile = {
+    name: 'Alex Chen',
+    role: 'Citizen Scientist',
+    id: 'AG-9428',
+    points: userPoints,
+    co2SavedKg: co2SavedTotalKg,
+    completedActionsCount: completedActionsCount,
+    rank: '#14',
+  };
+
+  const openProfileModal = () => setIsProfileModalOpen(true);
+  const joinCommunityAction = (id: string) => toggleCommunityAction(id);
 
   // Notification management
   const markNotificationRead = (id: string) => {
@@ -252,7 +278,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addReport,
         communityActions,
         toggleCommunityAction,
+        joinCommunityAction,
         userPoints,
+        userProfile,
         co2SavedTotalKg,
         completedActionsCount,
         notifications,
@@ -268,6 +296,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setSelectedSourceForModal,
         isProfileModalOpen,
         setIsProfileModalOpen,
+        openProfileModal,
       }}
     >
       {children}

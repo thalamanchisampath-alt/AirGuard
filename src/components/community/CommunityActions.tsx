@@ -24,9 +24,12 @@ export const CommunityActions: React.FC = () => {
   const {
     communityActions,
     joinCommunityAction,
+    toggleCommunityAction,
     userProfile,
+    userPoints,
     showToast,
-    openProfileModal
+    openProfileModal,
+    setIsProfileModalOpen,
   } = useApp();
 
   const [filterCategory, setFilterCategory] = useState<string>('All');
@@ -44,8 +47,13 @@ export const CommunityActions: React.FC = () => {
       return;
     }
 
-    joinCommunityAction(action.id);
-    showToast(`You joined "${action.title}"! +${action.points || 100} Eco Points awarded!`, 'success');
+    if (joinCommunityAction) {
+      joinCommunityAction(action.id);
+    } else if (toggleCommunityAction) {
+      toggleCommunityAction(action.id);
+    }
+
+    showToast(`You joined "${action.title}"! +${action?.points || 100} Eco Points awarded!`, 'success');
 
     try {
       confetti({
@@ -96,12 +104,18 @@ export const CommunityActions: React.FC = () => {
 
         {/* User Eco Status Trigger */}
         <button
-          onClick={openProfileModal}
+          onClick={() => {
+            if (openProfileModal) {
+              openProfileModal();
+            } else if (setIsProfileModalOpen) {
+              setIsProfileModalOpen(true);
+            }
+          }}
           className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600/10 to-teal-600/10 border border-emerald-500/20 text-xs text-slate-800 dark:text-slate-200 hover:scale-105 transition-all"
         >
           <Trophy className="w-4 h-4 text-amber-500" />
-          <span>My Eco Score: <strong>{userProfile.points} Pts</strong></span>
-          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Rank #14</span>
+          <span>My Eco Score: <strong>{userProfile?.points ?? userPoints ?? 85} Pts</strong></span>
+          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Rank {userProfile?.rank || '#14'}</span>
         </button>
       </div>
 
